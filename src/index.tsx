@@ -1,10 +1,13 @@
 import { Context, Schema } from 'koishi'
 import {} from '@koishijs/plugin-server'
+import {} from 'koishi-plugin-w-as-forward'
 
-import { Event_post } from './webhook'
+import dedent from 'dedent'
+
+import { Event_topic } from './webhook'
 import packageJson from '../package.json'
 
-export const name = 'w-webmoe'
+export const name = 'w-discourse'
 
 export const inject = [ 'server' ]
 
@@ -30,15 +33,19 @@ export const response = (resp:
     ...resp
 })
 
+// TODO: move formatters to config
 export const eventFormatters = {
-    'post_created': ({ post }: Event_post) => {
-        return `
-            ${post.username} 在话题 ${post.topic_title} 下发布了新评论：
-            ${post.raw}
-        `.trim()
+    'topic_created': ({ topic }: Event_topic) => {
+        return dedent`
+            【Web.Moe】萌网新帖推送
+
+             标题：${topic.title}
+             作者：${topic.created_by.username}
+             链接：https://web.moe/t/topic/${topic.id}
+        `
     },
     'ping': () => {
-        return 'Pong'
+        return '【Web.Moe】Pong'
     }
 }
 
@@ -61,7 +68,7 @@ export function apply(ctx: Context, config: Config) {
         }
         if (eventName in eventFormatters) {
             const message = eventFormatters[eventName](event)
-            bot.broadcast(config.guildsToBroadcast, message)
+            bot.broadcast(config.guildsToBroadcast, <as-forward level='never'>{ message }</as-forward>)
             ktx.body = response({ status: 'ok', broadcast_count: config.guildsToBroadcast.length })
         }
         else {

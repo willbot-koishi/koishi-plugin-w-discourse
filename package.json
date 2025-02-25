@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-w-discourse",
   "description": "WillBot: Discourse webhook broadcaster",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -18,11 +18,16 @@
     "koishi": "^4.18.7"
   },
   "dependencies": {
+    "@satorijs/element": "^3.1.7",
+    "dedent": "^1.5.3",
     "koa-body": "^6.0.1"
   },
   "scripts": {
     "build": "yarn workspace willbot build w-discourse",
     "bump": "yarn workspace willbot bump w-discourse",
     "pub": "yarn workspace willbot pub w-discourse"
+  },
+  "devDependencies": {
+    "koishi-plugin-w-as-forward": "workspace:^"
   }
 }
